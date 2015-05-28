@@ -6,7 +6,8 @@ defmodule Gateway.DiscoverySupervisor do
   end
 
   def init(stash_pid) do
-    child_processes = [worker(Gateway.Discovery, [stash_pid])]
+    child_processes = [worker(Gateway.Discovery.DiscoveryServer, [stash_pid]),
+                       worker(Gateway.Discovery,[]) ]
     supervise child_processes, strategy: :one_for_one
   end
 
