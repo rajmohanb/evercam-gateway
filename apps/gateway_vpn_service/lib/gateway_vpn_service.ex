@@ -1,0 +1,2 @@
+defmodule GatewayVPNService do
+end
