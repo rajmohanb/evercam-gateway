@@ -6,7 +6,8 @@ defmodule Gateway.RoutingSupervisor do
   end
 
   def init(stash_pid) do
-    child_processes = [worker(Gateway.Routing.Rules, [stash_pid])]
+    child_processes = [worker(Gateway.Routing.Rules, [stash_pid]),
+                      worker(Gateway.Routing,[])]
     supervise child_processes, strategy: :one_for_one
   end
 
