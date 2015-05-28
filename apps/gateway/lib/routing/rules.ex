@@ -12,8 +12,22 @@ defmodule Gateway.Routing.Rules do
   end
 
   @doc """
-    Adds multiple forwarding rules.
+    Adds multiple forwarding rules. Removes any existing rules not contained in the list.
   """
+  def replace(rules) when is_list(rules) do
+    current_rules = all_rules
+
+    # Remove old rules not in newly passed list
+    current_rules
+      |> Enum.filter(fn(x) -> !Enum.member?(rules,x) end)
+      |> Enum.each(fn(x) -> remove(x) end)
+
+    # Add the list of new rules
+    rules
+      |> Enum.map(fn(x) -> add(x) end)
+  end
+
+  @doc "Adds multiple forwarding rules. Leaves existing rules unchanged."
   def add(rules) when is_list(rules) do
     rules
       |> Enum.map(fn(x) -> add(x) end)
@@ -82,13 +96,13 @@ defmodule Gateway.Routing.Rules do
   end
 
   # Returns the entire list of rules
-  defp rules do
+  defp all_rules do
     RulesServer.get()
   end
 
   # Checks if an identical rule already exists
   defp exists?(rule) when is_map(rule) do
-    rules
+    all_rules
       |> Enum.any?(fn(x) -> x == rule end)
   end
   
