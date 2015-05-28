@@ -46,12 +46,26 @@ defmodule Gateway.Routing.RulesTest do
     assert [:ok, {:error, :eexists}, :ok] == Rules.add(rules_list)
   end
 
+  test "Replacing a group of rules, removes those omitted and adds new ones" do
+    Rules.add(rules_list)
+    Rules.replace(replacement_rules_list)
+    assert Enum.sort(replacement_rules_list) == Enum.sort(Gateway.Routing.RulesServer.get)
+  end
+
   # A list of sample rules
   defp rules_list do
-    [
+   [ 
       %{:gateway_port=>8080,:ip_address=>test_ip,:port=>80},
       %{:gateway_port=>8080,:ip_address=>test_ip,:port=>80},
       %{:gateway_port=>9080,:ip_address=>test_ip,:port=>8000}
+    ]
+  end
+
+  # A list of replacement rules
+  defp replacement_rules_list do
+    [ 
+      %{:gateway_port=>9080,:ip_address=>test_ip,:port=>8000},
+      %{:gateway_port=>10080,:ip_address=>test_ip,:port=>4040}
     ]
   end
 
