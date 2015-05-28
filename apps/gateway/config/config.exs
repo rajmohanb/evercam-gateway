@@ -23,3 +23,9 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 config :porcelain, :goon_driver_path, "/usr/bin/goon"
+config :gateway, 
+    gateway_api_url: "http://127.0.0.1:9393/v1",
+    data_folder: ".evercam",
+    mac_file: "mac_address",
+    token_file: "token",
+    config_file: "config"
