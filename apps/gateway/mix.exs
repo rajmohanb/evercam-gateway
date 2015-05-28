@@ -14,7 +14,7 @@ defmodule Gateway.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :porcelain], mod: {Gateway, []}]
+    [applications: [:logger, :porcelain, :httpoison], mod: {Gateway, []}]
   end
 
   # Dependencies can be Hex packages:
@@ -31,7 +31,8 @@ defmodule Gateway.Mixfile do
       {:porcelain, "~> 1.0"},
       {:erlsom, git: "https://github.com/willemdj/erlsom"},
       {:hexate,  ">= 0.5.0"},
-      {:poison, ">= 1.4.0"}
+      {:poison, ">= 1.4.0"},
+      {:httpoison, "~> 0.6"}
     ]
   end
 end
