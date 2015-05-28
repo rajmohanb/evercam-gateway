@@ -189,6 +189,42 @@ defmodule Gateway.Utilities.Network do
     if Keyword.has_key?(attributes, key), do: Keyword.fetch!(attributes,key)
   end
 
+  @doc """
+  Gets primary interface. 'Primary' at present, simply means the first interface 
+  with an ip address assigned. TODO: Find a better criteria
+  """
+  def get_primary_interface do
+    get_interfaces
+      # Filter out interfaces that have no ip address
+      |> Enum.filter(fn(x) -> 
+           get_interface_attribute(x, :addr) != nil
+         end)
+      # grab the first one
+      |> Enum.at(0)
+  end
+
+  @doc """
+  Gets the primary IP Address of the local system.
+  """
+  def get_primary_ip_address do
+    get_primary_interface
+      # Get the ip address as a 4-tuple
+      |> get_interface_attribute(:addr)
+      # Turn the result into a string
+      |> to_ipstring
+  end
+
+  @doc """
+  Gets the primary MAC Address of the local system.
+  """
+  def get_primary_mac_address do
+    get_primary_interface
+      # Get the MAC address as a list of decimal integers  
+      |> get_interface_attribute(:hwaddr)
+      # Turn the result into a string
+      |> to_macstring
+  end
+ 
   # Parse a specific interface to transform ipaddr and hwaddr to strings
   # Interface elements are a keyword list which usually contains some duplicate keywords
   defp parse_interface(interface) do
