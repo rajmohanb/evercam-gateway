@@ -1,10 +1,11 @@
 defmodule Gateway.Discovery.DiscoveryServer do
+  @moduledoc "Storage and Retrieval of Network scanning results"
+
   use GenServer
   @name __MODULE__
   alias Gateway.Utilities.Stash
 
   ## Client API
-
   def start_link(stash_pid) do
     GenServer.start_link(@name, stash_pid, name: @name)
   end
@@ -31,7 +32,7 @@ defmodule Gateway.Discovery.DiscoveryServer do
   def handle_cast({:put, scan_results}, {hosts, stash_pid}) do
     {:noreply, {scan_results, stash_pid}}
   end
-  
+
   def terminate(_reason, {hosts, stash_pid})  do
     Stash.stash(stash_pid, hosts)
   end
