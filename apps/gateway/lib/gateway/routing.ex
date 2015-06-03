@@ -13,10 +13,15 @@ defmodule Gateway.Routing do
 
   @doc "Obtains forwarding rules from API and adds them to local Gateway"
   def get_rules do
-    Application.get_env(:gateway, :gateway_id)
-      |> Gateway.API.Rules.get!
-      |> process_rules
-      |> Rules.replace
+    gateway_id = Application.get_env(:gateway, :gateway_id)
+    case Gateway.API.Rules.get(gateway_id) do
+      {:ok, rules} ->
+        rules
+          |> process_rules
+          |> Rules.replace
+      _ ->
+        #do nothing
+      end
   end
 
   # Transforms results from API into rules format for Gateway

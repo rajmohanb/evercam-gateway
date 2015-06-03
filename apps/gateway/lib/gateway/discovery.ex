@@ -17,6 +17,18 @@ defmodule Gateway.Discovery do
     DiscoveryServer.get   
   end
 
+  @doc "Run scan"
+  def scan do
+    Scan.scan_basic 
+      |> DiscoveryServer.put
+  end
+
+  @doc "Post discovery results to Gateway API"
+  def post do
+    Application.get_env(:gateway, :gateway_id)
+      |> Gateway.API.Devices.post(results)
+  end
+
   # Server Callbacks
   def init([]) do
     case results do
@@ -32,12 +44,8 @@ defmodule Gateway.Discovery do
 
   @doc "Scans network, stores results in memory, uploads and sets intervals for rediscovery"
   def handle_info(:discover, _state) do
-    Scan.scan_test 
-      |> DiscoveryServer.put
-
-    Application.get_env(:gateway, :gateway_id)
-      |> Gateway.API.Devices.post!(results)
-
+    scan
+    post
     :erlang.send_after(@discovery_interval, self, :discover)
     {:noreply, nil}
   end
