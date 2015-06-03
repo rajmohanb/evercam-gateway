@@ -3,14 +3,15 @@ defmodule Gateway.API.Rules do
   alias Gateway.API.Base, as: API
 
   @doc "Gets all the forwarding rules for a specific Gateway"
-  def get!(gateway_id) do
-    API.get!("/gateways/#{gateway_id}/rules").body
+  def get(gateway_id) do
+    case API.get("/gateways/#{gateway_id}/rules") do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:ok, body}
+      {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
+        API.warn(status, body)
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        API.error(reason)
+    end
   end
  
-  @doc "Gets all the forwarding rules for a specific Gateway"
-  def get(gateway_id) do
-    {:ok, response} = API.get("/gateways/#{gateway_id}/rules")
-    {:ok, response.body}
-  end
-
 end

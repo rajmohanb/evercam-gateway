@@ -2,6 +2,19 @@ defmodule Gateway.API.Base do
   @moduledoc "Makes actual calls to the API and processes responses"
  
   use HTTPoison.Base
+  require Logger
+
+  @doc "Logs warning of API error and generates a standard response"
+  def warn(status, body) do
+    Logger.warn("HTTP Status Code: #{status} #{(body |> Poison.encode!)}")
+    {:error, body} 
+  end
+
+  @doc "Logs error from API and generates a standard response"
+  def error(reason) do
+    Logger.error(reason)
+    {:error, reason}
+  end
 
   defp process_url(url) do
     Application.get_env(:gateway, :gateway_api_url) <> url
