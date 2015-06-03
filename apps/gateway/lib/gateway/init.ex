@@ -5,14 +5,10 @@ defmodule Gateway.Init do
   Gateway is already registered but configuration data is for some reason unavailable 
   then it will attempt to download configuration again."
 
-  # TODO: We're passing around the pending gateway and not using it. It occurs to me
-  # now that we could actually use this to prevent hijacking of process by giving
-  # pending gateway a secret and stop using MAC Address. Must be confident that it 
-  # is not a pseudo-secret in this context
-
   alias Gateway.Init.Registration
   alias Gateway.Init.Configuration
   #alias Gateway.VPN
+  require Logger
 
   use GenServer
   @name __MODULE__
@@ -23,56 +19,54 @@ defmodule Gateway.Init do
     GenServer.start_link(@name, [], name: @name)
   end
 
-  # Server Callbacks
-  def init([]) do
-    :erlang.send(self, :load_config)
-    {:ok, nil}
-  end
-
   @doc "Tries to load config."
-  def handle_info(:load_config, nil) do
-    :erlang.send(self, :load_config)
-    {:noreply, Configuration.load}
+  def load_config do
+    Logger.info "Attempting to load configuration from file"
+    load_config(Configuration.load)
   end
 
   @doc "Set Application environment with config values. Joins VPN. Terminates Init process."
-  def handle_info(:load_config, {:ok, config}) do
+  def load_config({:ok, config}) do
     Configuration.set_environment(config)
-    #VPN.join
-    :erlang.exit(self, :configured)
-    {:noreply, nil}
+    VPN.join
+    {:ok, :configured}
   end
 
-  @doc "Calls registration process since there is no config. TODO: what if config was
-  corrupted or deleted?"
-  def handle_info(:load_config, {:error, :noconfig}) do
-    :erlang.send(self, :register)
-    {:noreply, nil}
+  @doc "If there is no config, tries to download one from Gateway API."
+  def load_config({:error, :noconfig}) do
+    case Configuration.load_token do
+      {:ok, token} ->
+        # FIXME: This is not a satisfactory way of solving the got api, got no config problem
+        Configuration.set_environment(%{"gateway_api_token" => token,
+                                    "gateway_id" => token["gateway_id"]})  
+        get_config
+      _ ->
+        register
+    end
   end
 
   @doc "Starts actual registration process by announcing Gateway. TODO: What happens if
   the announce doesn't return a pending gateway record?"
-  def handle_info(:register, nil) do
+  def register do
     response = Registration.announce
-    :erlang.send(self, :register)
-    {:noreply, {:pending, response}}
+    if is_map(response), do: Registration.retain_m2m_secret(response)
+    register({:pending, response})
   end
  
   @doc "Requests token (which will only be issued subject to user approval)"
-  def handle_info(:register, {:pending, pending_gateway}) do
+  def register({:pending, pending_gateway}) do
     response = Registration.request_token
-    :erlang.send(self, :register)
-    {:noreply, {:ok, response, pending_gateway}}
+    register({:ok, response, pending_gateway})
   end
 
   @doc "Gateway is still pending (i.e. no token). Wait and re-request token"
-  def handle_info(:register, {:ok, :pending, pending_gateway}) do
-    :erlang.send_after(@registration_interval, self, :register)
-    {:noreply, {:pending, pending_gateway}}
+  def register({:ok, :pending, pending_gateway}) do
+    Logger.info("Waiting to re-request token")
+    {:error, :awaiting_authentication}
   end
 
   @doc "Stores token and triggers self-configuration "
-  def handle_info(:register, {:ok, token, _pending_gateway}) do
+  def register({:ok, token, _pending_gateway}) do
     # I'm writing this to a file straightaway because right now getting a new one
     # is a bit hairy. TODO: we must have a mechanism for refreshing or recovering
     # a token. Even with a user interaction
@@ -80,30 +74,46 @@ defmodule Gateway.Init do
 
     # As a once off set the token and the gateway id in the system so it can obtain
     # configuration. Later these will be set by the configuration itself
-    Configuration.set_environment(%{"gateway_api_token" => Poison.encode!(token),
-                                    "gateway_id" => token.gateway_id})
-    :erlang.send(self, :get_configuration)
-    {:noreply, token}
+    token_map = Poison.encode!(token)
+    Configuration.set_environment(%{"gateway_api_token" => token_map,
+                                    "gateway_id" => token["gateway_id"]})
+    get_config
   end
 
-  @doc "Gets configuration and writes it. Doesn't need token here because token is already in system"
-  def handle_info(:get_configuration, _state) do
-    config = Registration.get_configuration
-    Configuration.write(config)
+  @doc "Gets configuration and writes it."
+  def get_config do
+    case Registration.get_configuration do
+      {:ok, config} ->
+        if Map.has_key?(config, "gateway_id"), do: Configuration.write(config)
+      {:error,_} ->
+    end
+    load_config
+  end
+
+  # Server Callbacks
+  @doc false
+  def init([]) do
     :erlang.send(self, :load_config)
+    {:ok, nil}
+  end
+
+  @doc false
+  def handle_info(:load_config, _state) do
+    case load_config do
+      {:ok, :configured} ->
+        Logger.info("Configuration complete")
+        Gateway.Supervisor.start_link
+      {:error, :awaiting_authentication} ->
+        :erlang.send_after(@registration_interval, self, :load_config)
+      _ ->
+        Logger.info("Unexpected outcome")
+    end
     {:noreply, nil}
   end
 
   @doc false
-  def terminate(:configured, _state) do
-    Gateway.Supervisor.start_link
-    :ok
-  end
-
-  @doc false
   def terminate(_reasons, _state) do
-    IO.puts "ah hah"
-    :ok
+    Logger.info("Initialisation process terminating...")
   end
 
 end

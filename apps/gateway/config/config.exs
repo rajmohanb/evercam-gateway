@@ -28,4 +28,5 @@ config :gateway,
     data_folder: ".evercam",
     mac_file: "mac_address",
     token_file: "token",
-    config_file: "config"
+    config_file: "config",
+    m2m_secret_file: "m2m_secret"

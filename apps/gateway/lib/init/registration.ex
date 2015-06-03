@@ -1,28 +1,43 @@
 defmodule Gateway.Init.Registration do
   alias Gateway.API.Gateways
   alias Gateway.Init.Network
+  alias Gateway.Init.Configuration
 
-  @doc "Announces Gateway to Evercam Gateway API"
+  @c "Announces Gateway to Evercam Gateway API"
   def announce do
-    Gateways.post!(%{:mac_address => Network.get_primary_mac_address})
+    request_body = %{:mac_address => Network.get_primary_mac_address,
+                     :m2m_secret => Configuration.load_m2m_secret}
+    case Gateways.post(request_body) do
+      {:ok, body} ->
+        body
+      {:error, _} ->
+        nil
+    end
   end
 
   @doc "Requests a token from the Evercam Gateway API"
   def request_token do
-    response = Gateways.get_token!(%{:mac_address => Network.get_primary_mac_address})
-
-    # TODO: This is shit. Find the right way. May involve adjusting API.
-    case response do
-      %{"error" => _} ->
+    params =  %{:m2m_secret => Configuration.load_m2m_secret}
+    case Gateways.get_token(Network.get_primary_mac_address, params) do
+      {:ok, body} ->
+        body
+      {:error, _} ->
         :pending
-      _ ->
-        response
     end
   end
 
   @doc "Gets configuration from Evercam Gateway API"
-  def get_configuration(gateway_id) do
-    Gateways.get_configuration(gateway_id)
+  def get_configuration do
+    gateway_id = Application.get_env(:gateway, :gateway_id)
+    Gateways.get_configuration(%{:gateway_id=>gateway_id})
+  end
+
+  @doc "If the API returned an m2m secret with response then we must retain it permanently
+  as it can never be recovered"
+  def retain_m2m_secret(pending_gateway) when is_map(pending_gateway) do
+    if Map.has_key?(pending_gateway, "m2m_secret") do
+      Configuration.write_m2m_secret(pending_gateway["m2m_secret"])
+    end
   end
 
 end

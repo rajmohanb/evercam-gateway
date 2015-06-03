@@ -19,6 +19,26 @@ defmodule Gateway.Init.Configuration do
     end
   end
 
+  @doc "Loads only the API token"
+  def load_token do
+    case File.read(token_file) do
+      {:ok, token} ->
+        {:ok, token |> Poison.decode!}
+      _ ->
+        {:error, :notoken}
+    end
+  end
+
+  @doc "Load m2m Secret"
+  def load_m2m_secret do
+    case File.read(m2m_secret_file) do 
+      {:ok, body} ->
+        body
+      _ ->
+        nil
+    end
+  end
+
   @doc "Loads a given config into Application Environment."
   def set_environment(config) do
     config
@@ -55,6 +75,13 @@ defmodule Gateway.Init.Configuration do
     File.close file
   end
 
+  @doc "Writes m2m_secret file"
+  def write_m2m_secret(m2m_secret) do
+    {:ok, file} = File.open(m2m_secret_file, [:write])
+    IO.binwrite(file, m2m_secret)
+    File.close file
+  end
+
   @doc "Gets the path of the user home directory. If it doesn't exist it creates it."
   def get_data_directory do
     home_path = Path.join(System.user_home, Application.get_env(:gateway, :data_folder)) 
@@ -68,6 +95,10 @@ defmodule Gateway.Init.Configuration do
 
   defp token_file do
     Path.join(get_data_directory, Application.get_env(:gateway, :token_file))
+  end
+
+  defp m2m_secret_file do
+    Path.join(get_data_directory, Application.get_env(:gateway, :m2m_secret_file))
   end
 
 end
