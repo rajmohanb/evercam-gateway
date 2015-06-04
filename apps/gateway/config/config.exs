@@ -29,4 +29,10 @@ config :gateway,
     mac_file: "mac_address",
     token_file: "token",
     config_file: "config",
-    m2m_secret_file: "m2m_secret"
+    x509_cert_file: "ether_x509_cert",
+    private_key_file: "ether_private_key",
+    m2m_secret_file: "m2m_secret",
+    vpn_account_name: "evercam_gateway",
+    exclude_interfaces: ['lo','vpn_ether'],
+    vpncmd_path: "/opt/vpn/vpncmd"
+

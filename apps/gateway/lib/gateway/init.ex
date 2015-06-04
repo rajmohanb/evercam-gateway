@@ -7,7 +7,7 @@ defmodule Gateway.Init do
 
   alias Gateway.Init.Registration
   alias Gateway.Init.Configuration
-  #alias Gateway.VPN
+  alias Gateway.VPN
   require Logger
 
   use GenServer
