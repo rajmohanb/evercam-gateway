@@ -133,11 +133,12 @@ defmodule Gateway.Utilities.Network do
       |> String.rstrip(?:)
   end
 
-  @doc "Get a list of all the Network interfaces, discarding local loopback"
+  @doc "Get a list of all the Network interfaces, discarding specified interfaces"
   def get_interfaces() do
     {:ok, interface_data} = :inet.getifaddrs()
+    exclusion_list = Application.get_env(:gateway, :exclude_interfaces)
     interface_data 
-      |> Enum.filter(&(elem(&1,0) != 'lo'))    
+      |> Enum.filter(fn(x) -> !Enum.member?(exclusion_list, elem(x,0)) end)    
   end
 
   @doc "Parses network interface data, transforming IP addresses and MAC Addresses to 
