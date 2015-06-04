@@ -1,11 +1,10 @@
 defmodule Gateway.Init.Registration do
   alias Gateway.API.Gateways
-  alias Gateway.Init.Network
   alias Gateway.Init.Configuration
 
   @c "Announces Gateway to Evercam Gateway API"
   def announce do
-    request_body = %{:mac_address => Network.get_primary_mac_address,
+    request_body = %{:mac_address => Configuration.get_primary_mac_address,
                      :m2m_secret => Configuration.load_m2m_secret}
     case Gateways.post(request_body) do
       {:ok, body} ->
@@ -18,7 +17,7 @@ defmodule Gateway.Init.Registration do
   @doc "Requests a token from the Evercam Gateway API"
   def request_token do
     params =  %{:m2m_secret => Configuration.load_m2m_secret}
-    case Gateways.get_token(Network.get_primary_mac_address, params) do
+    case Gateways.get_token(Configuration.get_primary_mac_address, params) do
       {:ok, body} ->
         body
       {:error, _} ->
