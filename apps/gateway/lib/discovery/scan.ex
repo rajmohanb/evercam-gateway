@@ -40,11 +40,10 @@ defmodule Gateway.Discovery.Scan do
 
   defp scan_hosts(hosts) do
     # Use a parallel map to run scans on every host concurrently. Add a timeout 
-    # for individual scans. TODO: At present when the ports scan fails, the device
-    # just doesn't appear at all. This is due to the way the Parallel Map function
-    # handles failure. Work out a better way of managing this.
+    # for individual scans.
     hosts
       |> Parallel.map(@timeout, fn(host) -> Map.put_new(host, "ports", Host.scan(host["ip_address"])) end)
+      # Remove the ones that failed completely to return data
       |> Enum.filter(fn(x) -> 
             case x do
               {:error, :processfailed} ->
@@ -52,6 +51,10 @@ defmodule Gateway.Discovery.Scan do
               _->
                 true
             end
+         end)
+      # Remove the ones where the ports failed to scan
+      |> Enum.filter(fn(x) ->
+           x["ports"] != {:error, :parsingfailed}
          end)
   end
 
