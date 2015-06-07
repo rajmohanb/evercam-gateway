@@ -22,3 +22,31 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+config :gateway_vpn_service,
+       server_port: 6060,
+       ssl_options: [{:certfile, "keys/vpn_service_ssl.crt"}, 
+                     {:keyfile, "keys/vpn_service_ssl.key"},
+                     {:ciphers, [{:dhe_rsa,:aes_256_cbc,:sha256},
+                     {:dhe_dss,:aes_256_cbc,:sha256},
+                     {:rsa,:aes_256_cbc,:sha256},
+                     {:dhe_rsa,:aes_128_cbc,:sha256},
+                     {:dhe_dss,:aes_128_cbc,:sha256},
+                     {:rsa,:aes_128_cbc,:sha256},
+                     {:dhe_rsa,:aes_256_cbc,:sha},
+                     {:dhe_dss,:aes_256_cbc,:sha},
+                     {:rsa,:aes_256_cbc,:sha},
+                     {:dhe_rsa,:'3des_ede_cbc',:sha},
+                     {:dhe_dss,:'3des_ede_cbc',:sha},
+                     {:rsa,:'3des_ede_cbc',:sha},
+                     {:dhe_rsa,:aes_128_cbc,:sha},
+                     {:dhe_dss,:aes_128_cbc,:sha},
+                     {:rsa,:aes_128_cbc,:sha},
+                     {:rsa,:rc4_128,:sha},
+                     {:rsa,:rc4_128,:md5},
+                     {:dhe_rsa,:des_cbc,:sha},
+                     {:rsa,:des_cbc,:sha} 
+                    ]}],
+          vpn_hub: "DEFAULT",
+          vpn_port: "443",
+          vpn_hostname: "vpn.evercam.io"
+
