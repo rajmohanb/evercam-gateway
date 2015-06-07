@@ -12,7 +12,6 @@ defmodule Gateway.VPN.Client do
              <> " /USERNAME:#{get_env(:gateway, :vpn_username)}"
              <> " /NICNAME:ether"
 
-    IO.puts params
     command = shell("#{vpncmd} localhost /CLIENT /CMD AccountCreate #{params}")
     Logger.info(command.out)
     {:ok, command.status}
