@@ -125,7 +125,7 @@ defmodule Gateway.Init.Configuration do
     write_file(mac_file, mac_address)
   end
 
-   defp write_file(filename, contents) do
+  defp write_file(filename, contents) do
     {:ok, file} = File.open(filename, [:write])
     IO.binwrite(file, contents)
     File.close file
