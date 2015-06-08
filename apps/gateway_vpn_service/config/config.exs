@@ -48,5 +48,8 @@ config :gateway_vpn_service,
                     ]}],
           vpn_hub: "DEFAULT",
           vpn_port: "443",
-          vpn_hostname: "vpn.evercam.io"
+          vpn_hostname: "vpn.evercam.io",
+          vpn_keys_directory: ".evercam_keys",
+          vpn_group_name: "clients",
+          omapi_script: "../../bin/add-dhcp-static-lease.py"
 

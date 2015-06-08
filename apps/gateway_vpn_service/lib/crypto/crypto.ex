@@ -27,13 +27,36 @@ defmodule GatewayVPNService.Crypto do
                 |> Enum.reduce(fn(x, acc) -> acc <> ":" <> x end)
     {:ok, "00:AC:" <> suffix}
   end
+  
+  @doc "Stores a certificate in user data directory"
+  def store_certificate(certificate, gateway_id) do
+    path = certificate_file(gateway_id)
+    write_file(certificate, path)
+    {:ok, path}
+  end
+
+  defp certificate_file(gateway_id) do
+    Path.join(get_keys_directory, "gateway#{gateway_id}.pem")
+  end
 
   defp key_file(gateway_id) do
-    "gateway_#{gateway_id}.key"
+    Path.join(System.tmp_dir, "gateway#{gateway_id}.key")
   end
 
   defp cert_file(gateway_id) do
-    "gateway_#{gateway_id}.pem"
+    Path.join(System.tmp_dir, "gateway#{gateway_id}.pem")
+  end
+
+  defp get_keys_directory do
+    key_path = Path.join(System.user_home, Application.get_env(:gateway, :vpn_keys_directory)) 
+    if !File.exists?(key_path), do: File.mkdir(key_path)
+    key_path
+  end
+
+  defp write_file(filename, contents) do
+    {:ok, file} = File.open(filename, [:write])
+    IO.binwrite(file, contents)
+    File.close file
   end
 
 end
