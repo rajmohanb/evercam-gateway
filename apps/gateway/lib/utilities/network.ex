@@ -225,7 +225,18 @@ defmodule Gateway.Utilities.Network do
       # Turn the result into a string
       |> to_macstring
   end
- 
+
+  @doc "Generates a random ip address in a given range"
+  def generate_random_ip(ip_start_range, ip_end_range) do
+    start_range = to_ipinteger(ip_start_range)
+    end_range = to_ipinteger(ip_end_range)
+     
+    :random.seed(:os.timestamp)
+    random_number = :random.uniform
+    random_ip_integer = round((end_range-start_range)*random_number) + start_range
+    to_ipaddress(random_ip_integer)
+  end
+
   # Parse a specific interface to transform ipaddr and hwaddr to strings
   # Interface elements are a keyword list which usually contains some duplicate keywords
   defp parse_interface(interface) do
