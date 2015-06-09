@@ -48,7 +48,7 @@ defmodule Gateway.Routing.Rules do
         |> Enum.each(fn(x) -> remove(x) end)
       
       pre = pre_routing(rule[:gateway_port], rule[:ip_address], rule[:port])
-      post = post_routing(rule[:ip_address], rule[:port])
+      post = post_routing(rule[:ip_address], rule[:port], rule[:interface])
       status = add(pre,post)
      
       # Only actually add it to the rules list if the addition in iptables was successful
@@ -71,7 +71,7 @@ defmodule Gateway.Routing.Rules do
   """
   def remove(rule) when is_map(rule) do
     pre = pre_routing(rule[:gateway_port], rule[:ip_address], rule[:port])
-    post = post_routing(rule[:ip_address], rule[:port])
+    post = post_routing(rule[:ip_address], rule[:port], rule[:interface])
     status = remove(pre,post)
   
     if status == 0 do
@@ -142,8 +142,13 @@ defmodule Gateway.Routing.Rules do
   end
 
   # Generates a post-routing rule string.
-  defp post_routing(host_ip_address, host_port) do 
-    "POSTROUTING -p tcp -d #{host_ip_address} --dport #{host_port} -j SNAT --to-source #{interface_ip_address(host_ip_address)}"
+  defp post_routing(host_ip_address, host_port, out_interface \\ nil) do
+    case out_interface do
+      nil ->
+        "POSTROUTING -p tcp -d #{host_ip_address} --dport #{host_port} -j SNAT --to-source #{interface_ip_address(host_ip_address)}"
+      _ ->
+        "POSTROUTING -p tcp -o #{out_interface} -d #{host_ip_address} --dport #{host_port} -j SNAT --to-source #{interface_ip_address(host_ip_address)}"
+    end
   end
 
   # Determines relevant network interface IPv4 address based on an IP address of a network device
