@@ -13,7 +13,7 @@ defmodule GatewayVPNService.Server.Response do
     {:ok, certificate_path} = Crypto.store_certificate(certificate, gateway_id)
     {:ok, 0} = VPNServer.user_create(vpn_username)
     {:ok, 0} = VPNServer.user_cert_set(certificate_path)
-    {:ok, 0} = DHCP.add_static_lease(DHCP.get_free_ip_address(vpn_local_hostname), mac_address, vpn_local_hostname)
+    {:ok, 0} = DHCP.add_static_lease(DHCP.get_free_ip_address, mac_address, vpn_local_hostname)
 
     %{:vpn_username => vpn_username,
       :vpn_hub => get_env(:gateway_vpn_service, :vpn_hub), 
