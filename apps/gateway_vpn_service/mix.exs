@@ -16,7 +16,7 @@ defmodule GatewayVPNService.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :porcelain], mod: {GatewayVPNService,[]} ]
+    [applications: [:logger, :porcelain, :exredis], mod: {GatewayVPNService,[]} ]
   end
 
   # Dependencies can be Hex packages:
@@ -34,7 +34,9 @@ defmodule GatewayVPNService.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:gateway, in_umbrella: true}
+      {:gateway, in_umbrella: true},
+      {:exredis, ">= 0.1.1"},
+      {:poolboy,  github: "devinus/poolboy" }
     ]
   end
 end
