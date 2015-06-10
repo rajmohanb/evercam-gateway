@@ -31,7 +31,7 @@ defmodule GatewayVPNService.Crypto do
   @doc "Stores a certificate in user data directory"
   def store_certificate(certificate, gateway_id) do
     path = certificate_file(gateway_id)
-    write_file(certificate, path)
+    write_file(path, certificate)
     {:ok, path}
   end
 
