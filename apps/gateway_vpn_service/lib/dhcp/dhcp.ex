@@ -71,7 +71,7 @@ defmodule GatewayVPNService.DHCP do
   # clients
   defp omapi?(ip_address) do
     command = shell("#{omapi_script} lookup #{ip_address}")
-    Logger.info(command.out)
+    Logger.info("OMAPI Result: #{command.out}. Code: #{command.status}")
     case command.status do
       0 ->
         false # Found no entry
