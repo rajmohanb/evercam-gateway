@@ -22,7 +22,7 @@ defmodule GatewayVPNService.VPN.Server do
   end
 
   def vpncmd do
-    get_env(:gateway_vpn_service, :vpncmd_path)
+    get_env(:gateway, :vpncmd_path)
   end
 
 end

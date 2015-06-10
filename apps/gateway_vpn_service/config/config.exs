@@ -55,5 +55,6 @@ config :gateway_vpn_service,
           vpn_server_interface: "vpn_local1"
 
 config      :gateway, 
-       exclude_interfaces: ['lo']
+       exclude_interfaces: ['lo'],
+       vpn_cmd_path: "sudo vpncmd"
 
