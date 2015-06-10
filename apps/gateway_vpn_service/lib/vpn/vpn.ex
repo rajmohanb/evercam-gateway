@@ -8,7 +8,7 @@ defmodule GatewayVPNService.VPN.Server do
 
   def user_create(username) do
     group_name = get_env(:gateway_vpn_service, :vpn_group_name)
-    params = "#{username} /GROUP:#{group_name} /NOTE:Evercam Gateway User" 
+    params = "#{username} /GROUP:#{group_name} /REALNAME:#{username} /NOTE:Evercam Gateway User" 
     command = shell("#{vpncmd} #{@server} /SERVER /HUB:#{@hub} /CMD UserCreate #{params}")
     Logger.info(command.out)
     {:ok, command.status}
