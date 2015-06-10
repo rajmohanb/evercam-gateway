@@ -68,18 +68,19 @@ defmodule GatewayVPNService.DHCP do
 
   # Runs an OMAPI script which queries DHCP server to see if an IP has been assigned
   # This is to ensure we don't collide with properly dynamic leases issued to VPN
-  # clients
+  # clients. TODO: sort out script so it can distinguish between not found error and
+  # other errors.
   defp omapi?(ip_address) do
     command = shell("#{omapi_script} lookup #{ip_address}")
     Logger.info("OMAPI Result: #{command.out}. Code: #{command.status}")
     case command.status do
       0 ->
-        false # Found no entry
+        true # Found an entry
       1 ->
-        true # Found an existing entry
+        false # Found no existing entry
       _ ->
         Logger.error("Error looking up OMAPI: #{command.out} #{command.status}")
-        true # Let's assume there is an entry rather than risk collision
+        false
     end
  end
 
