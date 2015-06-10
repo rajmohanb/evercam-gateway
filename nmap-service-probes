@@ -5,6 +5,9 @@
 ##   Author: scandox@gmail.com                                ##
 ################################################################
 
+# Exclude the common printer ports
+Exclude T:9100-9107
+
 #########################HTTP PROBES############################
 Probe TCP GetRequest q|GET / HTTP/1.0\r\n\r\n|
 rarity 1

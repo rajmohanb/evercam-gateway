@@ -51,5 +51,9 @@ config :gateway_vpn_service,
           vpn_hostname: "vpn.evercam.io",
           vpn_keys_directory: ".evercam_keys",
           vpn_group_name: "clients",
-          omapi_script: "../../bin/add-dhcp-static-lease.py"
+          omapi_script: "../../bin/evercam-omapi.py",
+          vpn_server_interface: "vpn_local1"
+
+config      :gateway, 
+       exclude_interfaces: ['lo']
 
