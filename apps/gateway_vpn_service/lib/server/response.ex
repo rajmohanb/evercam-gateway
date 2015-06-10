@@ -31,7 +31,9 @@ defmodule GatewayVPNService.Server.Response do
   end
 
   def send(response, socket) do
-    :ssl.send(socket, response) 
+    response
+      |> Poison.encode!
+      |> :ssl.send(socket)
   end
 
   def send_failure(reason, socket) do
