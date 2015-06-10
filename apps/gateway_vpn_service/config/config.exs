@@ -56,5 +56,5 @@ config :gateway_vpn_service,
 
 config      :gateway, 
        exclude_interfaces: ['lo'],
-       vpn_cmd_path: "sudo vpncmd"
+       vpncmd_path: "sudo vpncmd"
 
