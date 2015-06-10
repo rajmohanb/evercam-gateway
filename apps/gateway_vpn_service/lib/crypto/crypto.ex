@@ -48,7 +48,7 @@ defmodule GatewayVPNService.Crypto do
   end
 
   defp get_keys_directory do
-    key_path = Path.join(System.user_home, Application.get_env(:gateway, :vpn_keys_directory)) 
+    key_path = Path.join(System.user_home, Application.get_env(:gateway_vpn_service, :vpn_keys_directory)) 
     if !File.exists?(key_path), do: File.mkdir(key_path)
     key_path
   end
