@@ -5,6 +5,7 @@ defmodule GatewayVPNService.Server.Request do
 
   @doc "Reads entire incoming request and authenticates it"
   def handle(socket) do
+    Logger.info("Handling incoming request...")
     case read_all(socket) do
       {:ok, request} ->
         process(request)
@@ -14,6 +15,7 @@ defmodule GatewayVPNService.Server.Request do
   end
 
   defp read_all(socket, alldata \\ "") do
+    Logger.info("Reading data...")
     case :ssl.recv(socket, 0) do
       {:ok, data} ->
         alldata = alldata<>data
