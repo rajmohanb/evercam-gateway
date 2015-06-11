@@ -29,9 +29,14 @@ defmodule GatewayVPNService.Server do
             accept(socket)
           {:error, :closed} ->
             accept(socket)
+          _ ->
+            Logger.info("Error establishing SSL Connection...")
         end
-      {:error, :closed} -> accept(socket)
-      {:error, _} -> { :stop, :error, [] }
+      {:error, :closed} -> 
+        accept(socket)
+      {:error, _} -> 
+        Logger.info("Unknown error establishing connection. Stopping.")
+        { :stop, :error, [] }
     end
   end
 
