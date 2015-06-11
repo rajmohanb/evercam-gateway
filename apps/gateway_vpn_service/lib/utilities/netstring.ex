@@ -14,6 +14,10 @@ defmodule GatewayVPNService.Utilities.Netstring do
   def write(string) when is_binary(string) do
     {:ok, "#{byte_size(string)}:#{string},"} 
   end
+ 
+  def write!(string) when is_binary(string) do
+    "#{byte_size(string)}:#{string},"
+  end
 
   defp read_match([size_string, string]) do
     size = String.to_integer(size_string)

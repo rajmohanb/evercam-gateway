@@ -3,6 +3,7 @@ defmodule GatewayVPNService.Server.Response do
   alias GatewayVPNService.Crypto
   alias GatewayVPNService.VPN.Server, as: VPNServer
   alias GatewayVPNService.DHCP
+  alias GatewayVPNService.Utilities.Netstring
 
   @doc "Takes in an authenticated request and generates required response"
   def create(request) when is_map(request) do
@@ -31,12 +32,12 @@ defmodule GatewayVPNService.Server.Response do
   end
 
   def send(response, socket) do
-    :ssl.send(socket, response |> Poison.encode!)
+    :ssl.send(socket, response |> Poison.encode! |> Netstring.write!)
     :ssl.close(socket)
   end
 
   def send_failure(reason, socket) do
-    :ssl.send(socket, %{:error => reason} |> Poison.encode!)
+    :ssl.send(socket, %{:error => reason} |> Poison.encode! |> Netstring.write!)
     :ssl.close(socket)
   end
 
