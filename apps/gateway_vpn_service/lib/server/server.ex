@@ -29,6 +29,8 @@ defmodule GatewayVPNService.Server do
             accept(socket)
           {:error, :closed} ->
             accept(socket)
+          _ ->
+            Logger.info("Error in establishing connection...")
         end
       {:error, :closed} -> accept(socket)
       {:error, _} -> { :stop, :error, [] }
