@@ -32,7 +32,7 @@ defmodule Gateway.Mixfile do
       {:erlsom, git: "https://github.com/willemdj/erlsom"},
       {:hexate,  ">= 0.5.0"},
       {:poison, ">= 1.4.0"},
-      {:httpoison, "~> 0.6"}
+      {:httpoison, git: "https://github.com/scandox/httpoison"}
     ]
   end
 end
