@@ -24,7 +24,7 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 config :porcelain, :goon_driver_path, "/usr/bin/goon"
 config :gateway, 
-    gateway_api_url: "http://127.0.0.1:9393/v1",
+    gateway_api_url: "https://api.gateway.evercam.io:443/v1",
     data_folder: ".evercam",
     mac_file: "mac_address",
     token_file: "token",
@@ -34,5 +34,5 @@ config :gateway,
     m2m_secret_file: "m2m_secret",
     vpn_account_name: "evercam_gateway",
     exclude_interfaces: ['lo','vpn_ether'],
-    vpncmd_path: "/opt/vpn/vpncmd"
+    vpncmd_path: "/opt/vpnclient/vpncmd"
 
