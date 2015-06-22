@@ -141,6 +141,13 @@ defmodule Gateway.Utilities.Network do
       |> Enum.filter(fn(x) -> !Enum.member?(exclusion_list, elem(x,0)) end)    
   end
 
+  @doc "Check if a named network interface exists. This uses no exclusion list, i.e. all
+  interfaces are searched."
+  def interface_exists?(interface) do
+    {:ok, interface_data} = :inet.getifaddrs()
+    interface_data |> Enum.any?(fn(x) -> elem(x,0) == String.to_char_list(interface) end)
+  end
+
   @doc "Parses network interface data, transforming IP addresses and MAC Addresses to 
   string representations. This is most suitable for preparing to send network data
   as JSON or other external representation."
