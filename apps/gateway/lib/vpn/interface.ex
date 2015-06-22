@@ -25,7 +25,8 @@ defmodule Gateway.VPN.Interface do
   Account is connected in order to work. It obtains a static lease from DHCP server
   on VPN Network."
   def configure_network do
-    command = shell("sudo dhclient -v vpn_ether")
+    Logger.info("Configuring Virtual Adapter...")
+    command = shell("dhclient -v -d vpn_ether")
     Logger.info(command.out)
     {:ok, command.status}
   end
