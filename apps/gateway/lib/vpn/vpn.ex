@@ -9,6 +9,9 @@ defmodule Gateway.VPN do
   reference I've indicated the ones that actually only need to be run on the very first
   configuration"
   def join do
+    # Creates a Virtual NIC. Only actually required once.
+    Interface.create
+
     # Sets the MAC address to that expected by DHCP Server
     # on VPN Network. Only actually required once 
     Interface.configure_mac
