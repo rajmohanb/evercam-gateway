@@ -4,6 +4,9 @@ defmodule Gateway.VPN.Client do
   import Application
   require Logger
 
+  @soft_ether_success 0
+  @soft_ether_not_connected 37
+
   @doc "Creates a VPN user account based on system configuration"
   def account_create do
     params = "#{get_env(:gateway, :vpn_account_name)}"  
@@ -33,6 +36,20 @@ defmodule Gateway.VPN.Client do
     command = shell("#{vpncmd} localhost /CLIENT /CMD AccountConnect #{get_env(:gateway, :vpn_account_name)}")
     Logger.info(command.out)
     {:ok, command.status}
+  end
+ 
+  @doc "Checks on status of Account Connection"
+  def account_status do
+    command = shell("#{vpncmd} localhost /CLIENT /CMD AccountStatusGet #{get_env(:gateway, :vpn_account_name)}")
+    case command.status do
+      @soft_ether_success ->
+        {:ok, :connected}
+      @soft_ether_not_connected ->
+        {:ok, :noconnection}
+      _ ->
+        Logger.info(command.status)
+        {:ok, :unknown} 
+    end
   end
 
   defp x509_cert_file do
