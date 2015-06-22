@@ -47,7 +47,7 @@ config :gateway_vpn_service,
                      {:rsa,:des_cbc,:sha} 
                     ]}],
           vpn_hub: "DEFAULT",
-          vpn_port: "443",
+          vpn_port: "80",
           vpn_hostname: "vpn.evercam.io",
           vpn_keys_directory: ".evercam_keys",
           vpn_group_name: "clients",
