@@ -31,6 +31,10 @@ defmodule Gateway.API.Base do
       |> Poison.encode!
   end
 
+  defp process_request_options(options) do
+    [hackney: [:insecure]]
+  end
+
   # Add authorization header to all calls. It can be ignored by those 
   # that don't require it. If the gateway doesn't yet have a token then
   # it will also obviously have no effect
