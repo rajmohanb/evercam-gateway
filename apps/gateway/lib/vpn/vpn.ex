@@ -2,6 +2,7 @@ defmodule Gateway.VPN do
   @moduledoc "Brings together client and interface functions for VPN"
   alias Gateway.VPN.Client
   alias Gateway.VPN.Interface
+  require Logger
 
   @doc "Joins client to VPN. This relies on the vpnclient service being active but that
   is the system's responsibility (for now). Since all the operations here are idempotent
@@ -9,6 +10,9 @@ defmodule Gateway.VPN do
   reference I've indicated the ones that actually only need to be run on the very first
   configuration"
   def join do
+    # Creates a Virtual NIC. Only actually required once.
+    Interface.create
+
     # Sets the MAC address to that expected by DHCP Server
     # on VPN Network. Only actually required once 
     Interface.configure_mac
@@ -26,8 +30,18 @@ defmodule Gateway.VPN do
     Client.account_connect
  
     # Ensures the virtual NIC goes through DHCP process on VPN
-    # Required on every startup
-    Interface.configure_network
+    # Required on every startup. Spawn a separate process so the system can
+    # continue while dhcp client waits until Virtual adaptor is actually connected
+    spawn fn ->
+      send self(), Client.account_status
+      receive do
+        {:ok, :connected} ->
+          Interface.configure_network
+        {:ok, status} ->
+          Logger.info("VPN Account Status: #{status}")
+          send self(), Client.account_status
+      end 
+    end
   end
 
 end

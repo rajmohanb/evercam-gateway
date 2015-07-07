@@ -56,7 +56,7 @@ config :gateway_vpn_service,
 
 config :gateway, 
        exclude_interfaces: ['lo'],
-       vpncmd_path: "sudo vpncmd"
+       vpncmd_path: "vpncmd"
 
 config :logger,
   backends: [{LoggerFileBackend, :info},

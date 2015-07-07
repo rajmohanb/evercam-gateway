@@ -109,29 +109,29 @@ defmodule Gateway.Routing.Rules do
   # Initialise IP Tables
   defp flush_iptables do 
     # Flush all existing NAT rules
-    shell("sudo iptables -t nat -F")
-    shell("sudo iptables -X")
+    shell("iptables -t nat -F")
+    shell("iptables -X")
   end
 
   # Uses iptables to add a complete rule. A rule must have both a pre-route and a post-route 
   defp add(pre, post) do
-    command = shell("sudo iptables -t nat -A #{pre}") 
+    command = shell("iptables -t nat -A #{pre}") 
     # prevent the post-route being added if pre-route failed. Otherwise buggy networking may ensue.
     if command.status == 0 do
-      command = shell("sudo iptables -t nat -A #{post}") 
+      command = shell("iptables -t nat -A #{post}") 
     end
     command.status
   end
 
   # Uses iptables to remove an existing rule. It removes both the pre and post routes. 
   defp remove(pre,post) do
-    command = shell("sudo iptables -t nat -D #{pre}") 
+    command = shell("iptables -t nat -D #{pre}") 
     # prevent the post-route being deleted if pre-route deletion failed. Otherwise buggy networking may ensue.
     if command.status == 0 do
       # TODO: Figure out what to do if the interface IP changed between adding rule and removing it
       # This is really an edge case because rules are regenerated on reboot anyway. Still has to be
       # considered
-      command = shell("sudo iptables -t nat -D #{post}") 
+      command = shell("iptables -t nat -D #{post}") 
     end
     command.status
   end

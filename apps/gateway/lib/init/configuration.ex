@@ -1,10 +1,11 @@
 defmodule Gateway.Init.Configuration do
   @moduledoc "Handles loading and setting of core Gateway configuration"
   alias Gateway.Utilities.Network, as: NetUtils
-  
+  require Logger 
+ 
   @doc "Loads complete core configuration from gateway directory in user home directory"
   def load do
-    case File.read(config_file) do
+    case read_file(config_file) do
       {:ok, main_config} ->
         {:ok, token} = File.read(token_file)
         {:ok, mac_address} = File.read(mac_file)
@@ -21,7 +22,7 @@ defmodule Gateway.Init.Configuration do
 
   @doc "Loads only the API token"
   def load_token do
-    case File.read(token_file) do
+    case read_file(token_file) do
       {:ok, token} ->
         {:ok, token |> Poison.decode!}
       _ ->
@@ -31,7 +32,7 @@ defmodule Gateway.Init.Configuration do
 
   @doc "Load m2m Secret"
   def load_m2m_secret do
-    case File.read(m2m_secret_file) do 
+    case read_file(m2m_secret_file) do 
       {:ok, body} ->
         body
       _ ->
@@ -108,7 +109,7 @@ defmodule Gateway.Init.Configuration do
 
   # Get mac address from gateway data folder
   defp primary_mac_from_file do
-    case File.read(mac_file) do
+    case read_file(mac_file) do
       {:ok, body} ->
         body
       {:error, :enoent} ->
@@ -129,6 +130,17 @@ defmodule Gateway.Init.Configuration do
     {:ok, file} = File.open(filename, [:write])
     IO.binwrite(file, contents)
     File.close file
+  end
+
+  defp read_file(filename) do
+    case File.read(filename) do
+      {:ok, body} ->
+        {:ok, body |> String.rstrip(?\n) }
+      {:error, reason} ->
+        {:error, reason}
+      _ ->
+        nil
+    end
   end
 
   defp mac_file do
