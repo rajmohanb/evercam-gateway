@@ -14,9 +14,9 @@ defmodule GatewayVPNService.Server.Response do
     {:ok, key, certificate} = Crypto.generate_key_pair(gateway_id)
     {:ok, mac_address} = Crypto.generate_mac_address
     {:ok, certificate_path} = Crypto.store_certificate(certificate, gateway_id)
-    {:ok, 0} = VPNServer.user_create(vpn_username)
-    {:ok, 0} = VPNServer.user_cert_set(vpn_username, certificate_path)
-    {:ok, 0} = DHCP.add_static_lease(vpn_ip_address, mac_address, vpn_local_hostname)
+    {:ok, _ } = VPNServer.user_create(vpn_username)
+    {:ok, 0 } = VPNServer.user_cert_set(vpn_username, certificate_path)
+    {:ok, _ } = DHCP.add_static_lease(vpn_ip_address, mac_address, vpn_local_hostname)
     #TODO: Dynamically Add a DNS Entry to the VPN DNS Server.
 
     %{:vpn_username => vpn_username,
