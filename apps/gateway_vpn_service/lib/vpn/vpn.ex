@@ -3,7 +3,7 @@ defmodule GatewayVPNService.VPN.Server do
   import Application
   require Logger
 
-  @server "localhost"
+  @server "localhost:80"
   @hub "DEFAULT"
 
   def user_create(username) do
