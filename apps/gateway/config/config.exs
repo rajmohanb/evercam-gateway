@@ -34,5 +34,16 @@ config :gateway,
     m2m_secret_file: "m2m_secret",
     vpn_account_name: "evercam_gateway",
     exclude_interfaces: ['lo','vpn_ether'],
-    vpncmd_path: "/opt/vpnclient/vpncmd"
+    vpncmd_path: "/opt/vpn/vpncmd"
 
+config :logger,
+  backends: [{LoggerFileBackend, :info},
+             {LoggerFileBackend, :error}]
+
+config :logger, :info,
+  path: "gateway-info.log",
+  level: :info
+
+config :logger, :error,
+  path: "gateway-error.log",
+  level: :error
