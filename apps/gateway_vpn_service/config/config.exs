@@ -54,7 +54,18 @@ config :gateway_vpn_service,
           omapi_script: "../../bin/evercam-omapi.py",
           vpn_server_interface: "vpn_local1"
 
-config      :gateway, 
+config :gateway, 
        exclude_interfaces: ['lo'],
        vpncmd_path: "sudo vpncmd"
 
+config :logger,
+  backends: [{LoggerFileBackend, :info},
+             {LoggerFileBackend, :error}]
+
+config :logger, :info,
+  path: "/var/www/logs/vpn-service-info.log",
+  level: :info
+
+config :logger, :error,
+  path: "/var/www/logs/vpn-service-error.log",
+  level: :error

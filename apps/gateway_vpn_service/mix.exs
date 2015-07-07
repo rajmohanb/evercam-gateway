@@ -36,7 +36,8 @@ defmodule GatewayVPNService.Mixfile do
     [
       {:gateway, in_umbrella: true},
       {:exredis, ">= 0.1.1"},
-      {:poolboy,  github: "devinus/poolboy" }
+      {:poolboy,  github: "devinus/poolboy" },
+      {:logger_file_backend, github: "onkel-dirtus/logger_file_backend" }
     ]
   end
 end
