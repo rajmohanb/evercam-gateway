@@ -1,0 +1,34 @@
+### BEGIN INIT INFO
+# Provides:          evercam-gateway
+# Required-Start:    $all
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Evercam Gateway
+# Description:       Starts the Evercam Gateway
+### END INIT INFO
+export HOME=/root
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/sbin
+APP=/opt/evercam/evercam-gateway/apps/gateway
+
+case "$1" in
+	start)
+                cd $APP
+                elixir --detached --no-halt -S mix run
+		;;
+	stop)
+                # Needless to say this is very crude. Only for use until
+                # we have finalised proper deployment package for Gateway App
+                ps aux | grep elixir | awk '{ print $2}' | xargs kill
+		;;
+	restart)
+                ps aux | grep elixir | awk '{ print $2}' | xargs kill
+                sleep 3
+		cd $APP
+                elixir --detached --no-halt -S mix run
+                ;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac
+exit 0
