@@ -22,8 +22,16 @@ defmodule Gateway.API.Base do
 
   # Decode the body into a Map or List of Maps
   defp process_response_body(body) do
-    body
-      |> Poison.decode!
+    case Poison.decode(body) do
+      {:ok, decoded_body} ->
+        decoded_body
+      {:error, :invalid} ->
+        Logger.error("Response was not valid JSON")
+        body
+      {:error, {:invalid, error}} ->
+        Logger.error(error)
+        body
+    end
   end
 
   defp process_request_body(body) do
