@@ -2,19 +2,19 @@
 
 ## Summary
 
-This Elixir application is one part of a system designed to discover, route and securely connect LAN devices to the [Evercam.io](https://www.evercam.io) platform. It is principally concerned with connecting cameras, though it is not strictly limited to camera hardware: Any source of image and video data should be routable.
+This Elixir umbrella project is part of a system designed to discover, route and securely connect LAN devices to the [Evercam.io](https://www.evercam.io) platform. It is principally concerned with connecting cameras, though it is not strictly limited to camera hardware: Any source of image and video data should be routable.
 
-This particular application is designed to run on minimal hardware sitting in the customer's LAN. It performs the following functions:
+This umbrella project contains two main apps:
 
-*    Announces itself to the (remote) Gateway API, awaiting verification by customer
-*    Authenticates with the Gateway API
-*    Configures itself based on configuration data supplied by the Gateway API
-*    Joins Evercam VPN
-*    Discovers local devices/cameras
-*    Polls API for new routing rules
-*    Adds and removes routing rules to the OS as directed by API
+*    [Gateway](https://github.com/evercam/evercam-gateway/tree/master/apps/gateway): software designed to run on minimal hardware in a customer's LAN, providing secure routing for cameras on the local network
+*    [Gateway VPN Service](https://github.com/evercam/evercam-gateway/tree/master/apps/gateway_vpn_service): software designed to run on (or connected to) a VPN Server which facilitates automation of VPN services for the Gateway software.
 
-The other two main parts of the system are the Gateway API itself and the Gateway-VPN-Service (also an Elixir application). The repositories for these elements of the system have not yet been made public, though it is intended to do so shortly.
+These two apps are included within the same project as they share some critical code modules, which it currently does not make sense to release as individual, general purpose modules (though it may in the future).
+
+The overall system further relies on another two elements:
+
+*   [Gateway API](https://github.com/evercam/evercam-gateway-api): an API layer which provides authentication, data storage and communications for the system.
+*   [Gateway Dashboard](https://github.com/evercam/evercam-gateway-dashboard): a browser-based dashboard which allows users to approve Gateway devices and connect LAN Cameras to their Evercam.io account.
 
 ## Example
 
