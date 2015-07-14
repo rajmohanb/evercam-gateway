@@ -15,4 +15,3 @@ This particular application is designed to run on minimal hardware sitting in th
 *    Adds and removes routing rules to the OS as directed by API
 
 The other two main parts of the system are the [Gateway API](https://github.com/evercam/evercam-gateway-api) itself and the [Gateway VPN Service](https://github.com/evercam/evercam-gateway/tree/master/apps/gateway_vpn_service) which is part of the umbrella project which contains this app.
-
