@@ -162,8 +162,8 @@ defmodule Gateway.Utilities.Network do
   f%%ked-up network. In which case the device can't be routed to anyway.
   """
   def get_device_interface(device_ip_address) do
-    [interface] = get_interfaces
-      |> Enum.filter(fn(x) ->
+    interface = get_interfaces
+      |> Enum.find(nil, fn(x) ->
             interface_ip = get_interface_attribute(x,:addr)
             interface_mask = get_interface_attribute(x,:netmask)
             if (interface_ip && interface_mask != nil) do
@@ -172,7 +172,13 @@ defmodule Gateway.Utilities.Network do
               false
             end
           end)
-      interface
+
+     case interface do
+       nil ->
+         {:error, :none}
+       interface ->
+         {:ok, interface}
+     end
   end
 
   @doc """

@@ -2,8 +2,9 @@ defmodule Gateway.Routing.Rules do
   @moduledoc "Controls use of iptables(8) for dynamically adding and removing
   routing rules. These rules direct traffic from the Gateway to other LAN devices."
   alias Gateway.Routing.RulesServer
+  alias Gateway.Utilities.Network, as: NetUtils
   import Gateway.Utilities.External
-
+    
   @doc "Clears all existing user-generated iptables rules in the OS. Starts the genserver that
   stores the rules state"
   def start_link(stash_pid) do
@@ -153,13 +154,21 @@ defmodule Gateway.Routing.Rules do
 
   # Determines relevant network interface IPv4 address based on an IP address of a network device
   defp interface_ip_address(ip_address) do
-    alias Gateway.Utilities.Network, as: NetUtils
-    
-    ip_address
+    case device_interface(ip_address) do
+      {:ok, interface} ->
+        interface
+          |> NetUtils.get_interface_attribute(:addr)
+          |> NetUtils.to_ipstring
+      _ ->
+        "0.0.0.0"
+    end
+  end
+
+  # Returns Network interface on which a device can be routed
+  defp device_interface(ip_address) do
+   ip_address
       |> NetUtils.to_ipaddress
       |> NetUtils.get_device_interface 
-      |> NetUtils.get_interface_attribute(:addr)
-      |> NetUtils.to_ipstring
   end
 
 end
