@@ -30,14 +30,13 @@ The Gateway is automatic, reliable and secure.
 
 ## Technologies
 
-The Gateway is designed to run on GNU/Linux. It relies on the following system utilities:
+The Gateway is designed to run on GNU/Linux. It relies on the following:
 
 *    iptables
-*    nmap
-*    arp-scan
 *    ip
 *    openssl
 *    dhclient
+*    java
 
 It also relies on the [Softether VPN client](http://www.softether.org).
 
