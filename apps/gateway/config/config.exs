@@ -34,7 +34,8 @@ config :gateway,
     m2m_secret_file: "m2m_secret",
     vpn_account_name: "evercam_gateway",
     exclude_interfaces: ['lo','vpn_ether'],
-    vpncmd_path: "/opt/vpnclient/vpncmd"
+    vpncmd_path: "/opt/vpnclient/vpncmd",
+    evercam_discovery_cmd: "java -jar ../../bin/evercam-discovery.jar"
 
 config :logger,
   backends: [{LoggerFileBackend, :info},

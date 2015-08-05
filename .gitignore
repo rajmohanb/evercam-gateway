@@ -5,4 +5,5 @@ erl_crash.dump
 mix.lock
 *.beam
 *.swp
+*.log
 **keys/

@@ -19,7 +19,7 @@ defmodule Gateway.Discovery do
 
   @doc "Run scan"
   def scan do
-    Scan.scan_basic 
+    Scan.run 
       |> DiscoveryServer.put
   end
 

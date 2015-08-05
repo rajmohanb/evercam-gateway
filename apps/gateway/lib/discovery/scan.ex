@@ -1,61 +1,60 @@
 defmodule Gateway.Discovery.Scan do
-  alias Gateway.Discovery.Network
-  alias Gateway.Discovery.Host
-  alias Gateway.Utilities.Parallel
+  import Gateway.Utilities.External
+  import Application
+  require Logger
 
-  # Timeout for each host scan in milliseconds
-  @timeout 600000
+  @exclude_evercam_values ["lan_ip", "lan_http_port", "lan_rtsp_port"]
 
   @doc "Returns a complete list of all network devices and associated data"
-  def scan_basic do   
-    Network.scan_all()
-      |> scan_hosts
+  def run do   
+    evercam_discovery
+      |> parse_evercam_discovery
   end
 
-  @doc "Experimental use only. Scan beyond interface subnets. This will potentially 
-  identify hosts that cannot be routed to. It could take a very long time - think days." 
-  def scan_deep do
-    ["192.0.0.0/24", "192.168.0.0/16", "169.254.0.0/16", "172.16.0.0/12"]
-      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
-      |> List.flatten
-      |> scan_hosts
+  # Runs the evercam discovery command (set in config) and returns results
+  defp evercam_discovery do
+    command = shell("#{get_env(:gateway, :evercam_discovery_cmd)}")
+    Logger.error(command.err)
+    Logger.info(command.out)
+    {:ok, command.out}
   end
 
-  @doc "Scans default IP addresses used by camera manufacturers. i.e. Hikvision: 192.0.0.64. 
-  This may identify hosts that cannot be routed to."
-  def scan_default do
-    ["192.0.0.64", "192.168.0.90"]
-      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
-      |> List.flatten
-      |> scan_hosts
+  # Parses the results of Evercam Discovery into format required by Gateway API
+  defp parse_evercam_discovery({:ok, results}) do
+    results 
+      |> Poison.decode!
+      |> Map.fetch!("cameras")
+      |> cameras_to_devices
   end
 
-  def scan_test do
-  ["172.16.0.21"]
-      |> Enum.reduce([],fn(x,acc) -> [Network.scan_all(x) | acc] end)
-      |> List.flatten
-      |> scan_hosts
-
+  # Takes the lists of cameras and turns them into the (slightly) more generic "devices" 
+  # format that the Gateway API expects
+  defp cameras_to_devices(cameras) do
+    cameras 
+      |> Enum.map(fn(x) -> camera_to_device(x) end)
   end
 
-  defp scan_hosts(hosts) do
-    # Use a parallel map to run scans on every host concurrently. Add a timeout 
-    # for individual scans.
-    hosts
-      |> Parallel.map(@timeout, fn(host) -> Map.put_new(host, "ports", Host.scan(host["ip_address"])) end)
-      # Remove the ones that failed completely to return data
-      |> Enum.filter(fn(x) -> 
-            case x do
-              {:error, :processfailed} ->
-                false
-              _->
-                true
-            end
-         end)
-      # Remove the ones where the ports failed to scan
-      |> Enum.filter(fn(x) ->
-           x["ports"] != {:error, :parsingfailed}
-         end)
-  end
+  # Takes a single camera Map and turns it into a Device Map
+  # TODO: this is pretty horrible
+  defp camera_to_device(camera) do
+    # Add the top level values that are being renamed 
+    camera = camera |> Map.put_new("ip_address", camera["lan_ip"])
 
+    # Turn the basic http and rtsp port values and turn them into an array of maps
+    ports = []
+    if camera["lan_http_port"] != 0 do
+      ports = ports ++ [%{"port_id" => camera["lan_http_port"], "name" => "http"}]
+    end
+    if camera["lan_rtsp_port"] != 0 do
+      ports = ports ++ [%{"port_id" => camera["lan_rtsp_port"], "name" => "rtsp"}]
+    end
+ 
+    camera = camera |> Map.put_new("ports", ports)
+
+    # Takes the camera result and strips out values that are being recast
+    camera = camera |> Map.drop(@exclude_evercam_values)
+
+    camera
+  end 
+  
 end
