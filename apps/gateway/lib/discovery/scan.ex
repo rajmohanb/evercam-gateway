@@ -43,10 +43,10 @@ defmodule Gateway.Discovery.Scan do
     # Turn the basic http and rtsp port values and turn them into an array of maps
     ports = []
     if camera["lan_http_port"] != nil do
-      ports = ports ++ [%{"port_id" => camera["lan_http_port"], "name" => "http"}]
+      ports = ports ++ [%{"port_id" => camera["lan_http_port"], "service" => "http"}]
     end
     if camera["lan_rtsp_port"] != nil do
-      ports = ports ++ [%{"port_id" => camera["lan_rtsp_port"], "name" => "rtsp"}]
+      ports = ports ++ [%{"port_id" => camera["lan_rtsp_port"], "service" => "rtsp"}]
     end
  
     camera = camera |> Map.put_new("ports", ports)
