@@ -24,8 +24,8 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 config :gateway_vpn_service,
        server_port: 6060,
-       ssl_options: [{:certfile, "keys/vpn_service_ssl.crt"}, 
-                     {:keyfile, "keys/vpn_service_ssl.key"},
+       ssl_options: [{:certfile, "/var/apps/keys/vpn_service_ssl.crt"}, 
+                     {:keyfile, "/var/apps/keys/vpn_service_ssl.key"},
                      {:ciphers, [{:dhe_rsa,:aes_256_cbc,:sha256},
                      {:dhe_dss,:aes_256_cbc,:sha256},
                      {:rsa,:aes_256_cbc,:sha256},
@@ -63,9 +63,9 @@ config :logger,
              {LoggerFileBackend, :error}]
 
 config :logger, :info,
-  path: "/var/www/logs/vpn-service-info.log",
+  path: "/var/apps/logs/vpn-service-info.log",
   level: :info
 
 config :logger, :error,
-  path: "/var/www/logs/vpn-service-error.log",
+  path: "/var/apps/logs/vpn-service-error.log",
   level: :error
