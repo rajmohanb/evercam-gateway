@@ -17,10 +17,7 @@ defmodule GatewayVPNService.DHCP do
     {:ok, command.status}
   end
 
-  @doc "Returns a free IP address in the allowed range. TODO: See if we can get 
-  OMAPI Lookup working for these static leases. Currently it isn't. Not sure 
-  whether that's a feature or a bug. The best we can do is pick an IP and 
-  then check that it isn't assigned to a dynamic host using our OMAPI Lookup script."
+  @doc "Returns a free IP address in the allowed range."
   def get_free_ip_address do  
     next_ip = get_all_gateway_ips
       |> Enum.map(fn(x) -> NetUtils.to_ipinteger(x) end)
@@ -31,11 +28,7 @@ defmodule GatewayVPNService.DHCP do
   end
 
   def get_free_ip_address(current_ip) when is_integer(current_ip) and current_ip < @ip_range_end do
-    if omapi?(current_ip) do
-      get_free_ip_address(current_ip+1)
-    else
       reserve_ip_address(current_ip)
-    end
   end
 
   # Tries to reserve the ip address in question. If it succeeds then it 
@@ -65,24 +58,6 @@ defmodule GatewayVPNService.DHCP do
     if Enum.empty?(ips), do: ips = [@ip_range_start |> NetUtils.to_ipaddress |> NetUtils.to_ipstring]
     ips |> Enum.map(fn(x) -> NetUtils.to_ipaddress(x) end)
   end
-
-  # Runs an OMAPI script which queries DHCP server to see if an IP has been assigned
-  # This is to ensure we don't collide with properly dynamic leases issued to VPN
-  # clients. TODO: sort out script so it can distinguish between not found error and
-  # other errors.
-  defp omapi?(ip_address) do
-    command = shell("#{omapi_script} lookup #{ip_address}")
-    Logger.info("OMAPI Result: #{command.out}. Code: #{command.status}")
-    case command.status do
-      0 ->
-        true # Found an entry
-      1 ->
-        false # Found no existing entry
-      _ ->
-        Logger.error("Error looking up OMAPI: #{command.out} #{command.status}")
-        false
-    end
- end
 
   defp omapi_script do
     get_env(:gateway_vpn_service, :omapi_script)
