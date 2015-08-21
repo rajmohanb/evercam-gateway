@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 # Update the code base as per http://grimoire.ca/git/stop-using-git-pull-to-deploy
 # This approach assumes (and requires) no local changes being made to tracked files
 # We may need to think about this in terms of the config files
