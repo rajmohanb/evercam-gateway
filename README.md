@@ -40,7 +40,7 @@ The Gateway is designed to run on GNU/Linux. It relies on the following:
 
 It also relies on the [Softether VPN client](http://www.softether.org).
 
-## Why Elixir/Erlang OTP?
+## Why Elixir / Erlang OTP?
 
 *    *Fault tolerance*: The Gateway performs many operations reliant on error-prone responses from external utilities and remote services that may have intermittent reliability. OTP is an obvious choice for this.
 *    *Small footprint*: with erlang (erlang-mini), we can achieve a very small distribution size. We want to be able to support minimal hardware.
