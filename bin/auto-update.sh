@@ -10,7 +10,7 @@ git fetch --all
 git diff --exit-code origin/production
 
 # If there are any changes
-if [ $? -eq 1]; then
+if [ $? -eq 1 ]; then
 
   git checkout --force origin/production
 
