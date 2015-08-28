@@ -11,7 +11,10 @@ defmodule Gateway.VPN.Client do
   bug with setting MAC Address is removed. At present by design the system is not
   supposed to start and stop the actual VPN Client."
   def restart do
-    command = shell("#{get_env(:gateway, :vpnclient_path)} restart")
+    command = shell("#{get_env(:gateway, :vpnclient_path)} stop")
+    Logger.info(command.out)
+
+    command = shell("#{get_env(:gateway, :vpnclient_path)} start")
     Logger.info(command.out)
     {:ok, command.status}
   end
