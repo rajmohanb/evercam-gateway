@@ -7,6 +7,15 @@ defmodule Gateway.VPN.Client do
   @soft_ether_success 0
   @soft_ether_not_connected 37
 
+  @doc "Restarts the VPN Client. FIXME: Hopefully this can be dispensed with once
+  bug with setting MAC Address is removed. At present by design the system is not
+  supposed to start and stop the actual VPN Client."
+  def restart do
+    command = shell("#{get_env(:gateway, :vpnclient_path)} restart")
+    Logger.info(command.out)
+    {:ok, command.status}
+  end
+
   @doc "Creates a VPN user account based on system configuration"
   def account_create do
     params = "#{get_env(:gateway, :vpn_account_name)}"  
