@@ -34,6 +34,7 @@ config :gateway,
     m2m_secret_file: "m2m_secret",
     vpn_account_name: "evercam_gateway",
     exclude_interfaces: ['lo','vpn_ether'],
+    vpnclient_path: "/opt/vpnclient/vpnclient",
     vpncmd_path: "/opt/vpnclient/vpncmd",
     evercam_discovery_cmd: "java -jar ../../bin/evercam-discovery.jar"
 

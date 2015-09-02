@@ -7,13 +7,20 @@ export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # We may need to think about this in terms of the config files
 cd /opt/evercam/evercam-gateway
 git fetch --all
-git checkout --force origin/production
+git diff --exit-code origin/production
 
-# Go into the Gateway app folder
-cd apps/gateway
+# If there are any changes
+if [ $? -eq 1 ]; then
 
-# Update dependencies and compile
-yes | mix do deps.get, compile
+  git checkout --force origin/production
 
-# restart the gateway software
-/etc/init.d/evercam-gateway restart
+  # Go into the Gateway app folder
+  cd apps/gateway
+
+  # Update dependencies and compile
+  yes | mix do deps.get, compile
+
+  # restart the gateway software
+  /etc/init.d/evercam-gateway restart
+
+fi

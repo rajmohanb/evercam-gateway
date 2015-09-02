@@ -14,7 +14,10 @@ defmodule Gateway.VPN do
     Interface.create
 
     # Sets the MAC address to that expected by DHCP Server
-    # on VPN Network. Only actually required once 
+    # on VPN Network. Only actually required once. Moved it to last
+    # position as it appears that on first creation the NIC is not
+    # functioning before this is called and as a result this has no
+    # effect
     Interface.configure_mac
 
     # Creates the local VPN Account used to connect to VPN
@@ -25,11 +28,14 @@ defmodule Gateway.VPN do
     # Only actually required once
     Client.account_cert_set
 
+    # Restart the VPN Client. FIXME: Hope to remove this once Softether bug is resolved
+    Client.restart
+
     # Initiates the client connection to the VPN
     # Required on every startup
     Client.account_connect
  
-    # Ensures the virtual NIC goes through DHCP process on VPN
+   # Ensures the virtual NIC goes through DHCP process on VPN
     # Required on every startup. Spawn a separate process so the system can
     # continue while dhcp client waits until Virtual adaptor is actually connected
     spawn fn ->
