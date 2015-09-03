@@ -1,19 +1,29 @@
 defmodule Gateway.Discovery.Scan do
   import Gateway.Utilities.External
+  alias Gateway.Utilities.Network, as: NetUtils
   import Application
   require Logger
 
   @exclude_evercam_values ["lan_ip", "lan_http_port", "lan_rtsp_port"]
 
-  @doc "Returns a complete list of all network devices and associated data"
-  def run do   
-    evercam_discovery
-      |> parse_evercam_discovery
+  @doc "Returns a complete list of all network devices and associated data
+  Scans all available interfaces"
+  def run do
+    ranges
+      |> Enum.map(fn(x) -> evercam_discovery(x) |> parse_evercam_discovery end)
+      |> List.flatten
+  end
+
+  def ranges do
+     NetUtils.get_interfaces
+      |> NetUtils.parse_interfaces
+      |> Enum.map(fn(x) -> %{:ip_address=>x[:ip_address], :mask=>x[:net_mask]} end)
+      |> Enum.filter(fn(x) -> x[:ip_address] != nil end)
   end
 
   # Runs the evercam discovery command (set in config) and returns results
-  defp evercam_discovery do
-    command = shell("#{get_env(:gateway, :evercam_discovery_cmd)}")
+  defp evercam_discovery(range) do
+    command = shell("#{get_env(:gateway, :evercam_discovery_cmd)} -ip #{range[:ip_address]} -m #{range[:mask]}")
     Logger.error(command.err)
     Logger.info(command.out)
     {:ok, command.out}

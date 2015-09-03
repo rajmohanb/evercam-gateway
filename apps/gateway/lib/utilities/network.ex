@@ -139,6 +139,7 @@ defmodule Gateway.Utilities.Network do
     exclusion_list = Application.get_env(:gateway, :exclude_interfaces)
     interface_data 
       |> Enum.filter(fn(x) -> !Enum.member?(exclusion_list, elem(x,0)) end)    
+      |> Enum.map(fn(x) -> make_interface_keys_unique(x) end)
   end
 
   @doc "Check if a named network interface exists. This uses no exclusion list, i.e. all
@@ -267,31 +268,60 @@ defmodule Gateway.Utilities.Network do
       |> Map.put_new("name", to_string(interface_name))
   end
 
-  # Implements the conversion based on key name
-  defp replace_key_value(key, value) do
+  # Replaces duplicate keys in network interface with unique keys
+  # Uses format of value to determine key name
+  defp make_interface_keys_unique(interface) do
+    {interface_name, elements} = interface
+    {interface_name, Keyword.keys(elements)
+      |> Enum.reduce(elements, fn(x,acc) ->
+            {value, list} = Keyword.pop_first(acc,x)
+            [ list | [make_key_unique(x, value)]]
+            |> List.flatten
+          end)
+      }
+  end
+
+  # Makes a network interface key unique based on value format
+  defp make_key_unique(key, value) do
     case key do
       :addr ->
         case value do
           {_octet1,_,_,_} ->
-            {"ip_address", to_ipstring(value)}
+            {:ip_address, value}
           {_double_octet1, _, _, _, _, _, _, _} ->
-            {"ipv6_address", to_ipstring(value)}
+            {:ipv6_address, value}
           _->
-            {"ip_address", "error"}
+            {:error, "Invalid IP Address"}
         end
       :netmask ->
          case value do
            {_octet1,_,_,_} ->
-             {"net_mask", to_ipstring(value)}
+             {:net_mask, value}
           {_double_octet1, _, _, _, _, _, _, _} ->
-            {"ipv6_net_mask", to_ipstring(value)}
+            {:ipv6_net_mask, value}
           _->
-            {"net_mask", "error"}
+            {:error, "Invalid IP Address"}
          end
+      _->
+        {key, value}
+    end
+  end
+
+  # Implements the conversion based on key name
+  defp replace_key_value(key, value) do
+    case key do
+      :ip_address ->
+        {key, to_ipstring(value)}
+      :ipv6_address ->
+        {key, to_ipstring(value)}
+      :net_mask ->
+        {key, to_ipstring(value)}
+      :ipv6_net_mask ->
+        {key, to_ipstring(value)}
       :broadaddr ->
-        {"broadcast_address", to_ipstring(value)}
+        {key, to_ipstring(value)}
       :hwaddr ->
-        {"mac_address", to_macstring(value)}
+        {:mac_address, to_macstring(value)}
       _->
         {key, value}
     end
