@@ -4,6 +4,8 @@
 
 This Elixir umbrella project is part of a system designed to discover, route and securely connect LAN devices to the [Evercam.io](https://www.evercam.io) platform. It is principally concerned with connecting cameras, though it is not strictly limited to camera hardware: Any source of image and video data should be routable.
 
+https://cloud.githubusercontent.com/assets/5648894/9682341/c1602f18-52fd-11e5-972b-592d2e356b73.jpg
+
 This umbrella project contains two main apps:
 
 *    [Gateway](https://github.com/evercam/evercam-gateway/tree/master/apps/gateway): software designed to run on minimal hardware in a customer's LAN, providing secure routing for cameras on the local network
