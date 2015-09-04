@@ -165,8 +165,8 @@ defmodule Gateway.Utilities.Network do
   def get_device_interface(device_ip_address) do
     interface = get_interfaces
       |> Enum.find(nil, fn(x) ->
-            interface_ip = get_interface_attribute(x,:addr)
-            interface_mask = get_interface_attribute(x,:netmask)
+            interface_ip = get_interface_attribute(x,:ip_address)
+            interface_mask = get_interface_attribute(x,:net_mask)
             if (interface_ip && interface_mask != nil) do
               same_subnet?(interface_ip,device_ip_address, interface_mask) 
             else
@@ -212,7 +212,7 @@ defmodule Gateway.Utilities.Network do
     get_interfaces
       # Filter out interfaces that have no ip address
       |> Enum.filter(fn(x) -> 
-           get_interface_attribute(x, :addr) != nil
+           get_interface_attribute(x, :ip_address) != nil
          end)
       # grab the first one
       |> Enum.at(0)
@@ -224,7 +224,7 @@ defmodule Gateway.Utilities.Network do
   def get_primary_ip_address do
     get_primary_interface
       # Get the ip address as a 4-tuple
-      |> get_interface_attribute(:addr)
+      |> get_interface_attribute(:ip_address)
       # Turn the result into a string
       |> to_ipstring
   end
