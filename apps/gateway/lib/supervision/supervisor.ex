@@ -20,6 +20,9 @@ defmodule Gateway.Supervisor do
     # Start Sub Supervisor for Discovery
     Supervisor.start_child(sup, supervisor(Gateway.DiscoverySupervisor, [discovery_stash]))
 
+    # Start Sub Supervisor for WebRTC
+    Supervisor.start_child(sup, supervisor(Gateway.WebRTCSupervisor,[nil]))
+
   end
 
   def init(_) do

@@ -36,7 +36,9 @@ config :gateway,
     exclude_interfaces: ['lo','vpn_ether'],
     vpnclient_path: "/opt/vpnclient/vpnclient",
     vpncmd_path: "/opt/vpnclient/vpncmd",
-    evercam_discovery_cmd: "java -jar ../../bin/evercam-discovery.jar"
+    evercam_discovery_cmd: "java -jar ../../bin/evercam-discovery.jar",
+    janus_path: "/opt/janus/bin/janus",
+    gst_launch_path: "/usr/local/bin/gst-launch-1.0"
 
 config :logger,
   backends: [{LoggerFileBackend, :info},

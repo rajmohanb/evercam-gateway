@@ -28,7 +28,7 @@ defmodule Gateway.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:porcelain, "~> 1.0"},
+      {:porcelain, "~> 2.0"},
       {:erlsom, git: "https://github.com/willemdj/erlsom"},
       {:hexate,  ">= 0.5.0"},
       {:poison, ">= 1.4.0"},
